@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #SBATCH -p sched_mit_orcd
-#SBATCH -o mnist.out-%j
+#SBATCH -o log.mnist-%j
 
 # Activate the environment you set this up for
 source .venv/bin/activate

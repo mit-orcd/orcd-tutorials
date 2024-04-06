@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #SBATCH -p sched_mit_orcd
-#SBATCH -o mnist_timed.out-%j
+#SBATCH -o log.mnist_timed-%j
 
 source .venv/bin/activate
 

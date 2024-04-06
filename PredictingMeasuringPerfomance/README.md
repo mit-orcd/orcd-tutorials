@@ -1,25 +1,31 @@
 
 # Predicting and Measuring Performance
 
-This directory contains two examples for examining serial code and doing a basic parallel scaling analysis. The "mnist.py" example trains an MNIST model.
+This directory contains two examples for examining serial code and doing a basic parallel scaling analysis. There is an MNIST example, which trains an MNIST model, and a LAMMPS example (the KAPPA example distributed with LAMMPS).
 
 ## Setup
 
-A `setup.sh` script is provided to create a Python virtual environment and then download the small MNIST dataset. The virtual environment is defined in the `requirements.txt` file, the main dependencies for the example are `torch` and `torchvision`. The example should work with any version.
+### MNIST Example
 
-The `setup.sh` script loads the default Python module, you can edit the script to use your favorite Python or Anaconda module.
+A `setup_mnist.sh` script is provided to create a Python virtual environment and then download the small MNIST dataset. The virtual environment is defined in the `requirements.txt` file, the main dependencies for the example are `torch` and `torchvision`. The example should work with any version.
 
-Run the `setup.sh` script on a compute node in the partition you intend to run the example in. To do that submit `setup.sh` as a job in your target partition:
+The `setup_mnist.sh` script loads the default Python module, you can edit the script to use your favorite Python or Anaconda module.
+
+Run the `setup_mnist.sh` script on a compute node in the partition you intend to run the example in. To do that submit `setup_mnist.sh` as a job in your target partition:
 
 ```bash
-sbatch -p PARTITION setup.sh
+sbatch -p PARTITION setup_mnist.sh
 ```
 
 where `PARTITION` is your target partition.
 
+### LAMMPS Example
+
+The LAMMPS example requires no setup, but has only been tested on Rocky 8 nodes.
+
 ## Examine the Example Code
 
-Look at the example.
+Pick one of the two examples and look at it.
 
 Discuss: Is the example multithreaded? Distributed? Does it use a GPU? Do you think it has any memory requirements? What is your first guess at what resources to select for the job?
 
@@ -43,7 +49,9 @@ where `JOBID` is the Job ID for your job.
 
 Completed GPU jobs, you can add the following to your job script, which will print the GPU ID to the job's log file:
 
+```bash
 echo $CUDA_VISIBLE_DEVICES
+```
 
 ## Evaluate the Running Code
 
@@ -57,7 +65,9 @@ Stop the job (`scancel JOBID`, where `JOBID` is the Job ID for your job) and che
 
 ## Time the Code
 
-Add in time measurements for the code and print them out. You can use the “mnist_timed.py” script where this is already done for you if you need to save time.
+If you are using the MNIST example, add in time measurements for the code and print them out. You can use the “mnist_timed.py” script where this is already done for you if you need to save time.
+
+LAMMPS will print out the time to completion.
 
 Get an overall Serial time for the code and note it down. If you are using your own example and it is large use a smaller example, or part of the example. Or, if the mnist example is taking too long on the node you are using you can reduce the number of epochs in the job script.
 
