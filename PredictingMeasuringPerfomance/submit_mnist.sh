@@ -1,8 +1,10 @@
 #!/bin/bash
 
 #SBATCH -p sched_mit_orcd
-##SBATCH --exclusive
+#SBATCH -o mnist.out-%j
 
+# Activate the environment you set this up for
 source .venv/bin/activate
 
-python -u mnist.py --epochs=1
+# Run the example
+python -u mnist.py --epochs=5
