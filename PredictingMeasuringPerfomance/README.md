@@ -1,60 +1,72 @@
 
 # Predicting and Measuring Performance
 
-This directory contains two examples for examining serial code and doing a basic parallel scaling analysis. The "main.py" example trains an MNIST model.
+This directory contains two examples for examining serial code and doing a basic parallel scaling analysis. The "mnist.py" example trains an MNIST model.
 
-## Start an interactive job
+## Setup
 
-Start an interactive job on a full exclusive node:
+A `setup.sh` script is provided to create a Python virtual environment and then download the small MNIST dataset. The virtual environment is defined in the `requirements.txt` file, the main dependencies for the example are `torch` and `torchvision`. The example should work with any version.
 
-LLsub -i full
+The `setup.sh` script loads the default Python module, you can edit the script to use your favorite Python or Anaconda module.
 
-If the system is busy you may have to wait for a node to become available. Since we'll be doing some profiling it will be important that nothing else is running on the node so we can get accurate numbers. Open a second terminal and ssh to the node where the interactive job is running. Remember to exit out of both of these tereminal sessions when you are done.
+Run the `setup.sh` script on a compute node in the partition you intend to run the example in. To do that submit `setup.sh` as a job in your target partition:
 
-## Let's look at htop
+```bash
+sbatch -p PARTITION setup.sh
+```
 
-In the terminal that you have ssh'd to the node with the interactive job, run the "htop" command. Familiarize yourself with the different outputs. These are listed in the Practical HPC course.
+where `PARTITION` is your target partition.
 
-In the terminal with the interactive job, load the anaconda/2022b module and run:
+## Examine the Example Code
 
-python main.py
+Look at the example.
 
-Look at the terminal where you have htop running. How many threads is it using?
+Discuss: Is the example multithreaded? Distributed? Does it use a GPU? Do you think it has any memory requirements? What is your first guess at what resources to select for the job?
 
-## Set number of threads
+## Run the Example
 
-To get a good idea of serial performance we need to tell PyTorch to only use one thread. We can do this by setting the OMP_NUM_THREADS environment variable. Go to the interactive job terminal and set:
+Run the example as a job requesting the resources you just discussed. Use a small numbers (of cores, for example), but enough to confirm you are getting what you are asking for.
 
-export OMP_NUM_THREADS=1
+Check that your job was allocated the resources you requested. For running jobs you can use the `squeue` command with some additional flags:
 
-Now run the code again and check htop. Is it only using one thread now?
+```bash
+squeue --me -O JobArrayID,NumNodes,NumCPUs,tres-per-node,MinMemory,State,ReasonList
+```
 
-## Time the serial code
+For completed jobs use the `sacct` command:
 
-Now that we are sure we have our code running serially, we can time it. This is done in the main_timed.py script. Run:
+```bash
+sacct -j JOBID -o JobID,JobName,Partition,AllocCPUS,AllocNodes,ReqMem,State
+```
 
-python main.py --epochs=1
+where `JOBID` is the Job ID for your job.
 
-to completion. Note the total training time.
+Completed GPU jobs, you can add the following to your job script, which will print the GPU ID to the job's log file:
 
-## Analyze the serial performance
+echo $CUDA_VISIBLE_DEVICES
 
-We have serial time. We might want to time different portions of the code to see if there are any bottlenecks we can improve. We also want to know what the memory footprint is for the job, which we can get after the job completes with the sacct command:
+## Evaluate the Running Code
 
-sacct -j JOBID -o JobID,AllocCPUS,MaxRSS --units=G
+Run your job and take node of the node it is running on. If you are running your own code pick a case that runs for a few minutes.
 
-We want to ask ourselves: how can we scale? Is there a parallel implementation? Is it shared or distributed memory? Can we make use of accelerators? In this case, PyTorch can use shared memory parallelism through multithreading, and can make use of GPUs. To see what resources would be ideal for this job we can do a quick scaling experiment.
+In a separate terminal or tab ssh to the node where your job is running and start `htop -u USERNAME` or `top -u USERNAME` (where `USERNAME` is your Engaging username). Watch the output while your job runs.
 
-## Quick Scaling Experiment
+Watch the memory utilization, CPU load, and the processes/threads that appear at the bottom. Is this what you expect?
 
-We already have the serial run time, so set OMP_NUM_THREADS to 2 and run the code:
+Stop the job (`scancel JOBID`, where `JOBID` is the Job ID for your job) and check the peak memory utilization with sacct - is this what you expected based on what you saw in htop?
 
-export OMP_NUM_THREADS=2
-python main_timed.py
+## Time the Code
 
-And record the time. Repeat for 4, 8, 16, 32, and 48 (the total number of cores on the cpu nodes).
+Add in time measurements for the code and print them out. You can use the “mnist_timed.py” script where this is already done for you if you need to save time.
 
-Parallel speedup can be calculated by dividing the serial time by the parallel time (T_serial/T_parallel). You can then plot this to get the speedup plot, and you can see what number will give you the best speedup.
+Get an overall Serial time for the code and note it down. If you are using your own example and it is large use a smaller example, or part of the example. Or, if the mnist example is taking too long on the node you are using you can reduce the number of epochs in the job script.
 
-You can repeat the same experiment with a GPU. Request an exclusive GPU node and set OMP_NUM_THREADS to the number that gave the best speedup in the previous exercise. Then run the code and calculate the speedup in relation to what you got with the pure CPU threading example (T_cpu/T_gpu). What is the speedup you get? Is it worth adding the GPU in this case (with GPUs we are looking for >10x speedup)? Why or why not? Why might the speedup with the GPU be limited?
+If you have time, time different portions of your code and find what takes the most time. Are there any bottlenecks? Are they what you expected? Think about what changes you could make to your code to improve these. Note that hou may not be able to do this for a precompiled code that you did not write.
 
+## Calculate Speedup and Make a Speedup Curve
+
+You have your serial time number from the previous step, add processors/accelerators and calculate speedup. Most of us use existing codes and packages that use one of the following:
+
+- Shared memory: Create a speedup curve increasing number of threads 2,4,8,16,32 (continue with powers of 2 until you reach the total number of cores on the node you are using)
+- Distributed memory: Create a speedup curve increasing number of processes 2,4,8,16,32, etc. Note you will often see a difference depending on whether all processes are on the same node or not.
+- GPUs: Many of these also support shared memory, first start up scaling up with cpus using # of thread as described for Shared memory. Then run it with a GPU. What speedup do you see with the GPU vs with CPUs? Is it worth using the GPU?
