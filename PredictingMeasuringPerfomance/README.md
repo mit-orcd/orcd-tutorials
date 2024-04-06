@@ -1,7 +1,7 @@
 
 # Predicting and Measuring Performance
 
-This directory contains two examples for examining serial code and doing a basic parallel scaling analysis. There is an MNIST example, which trains an MNIST model, and a LAMMPS example (the KAPPA example distributed with LAMMPS).
+This directory contains two examples for examining serial code and doing a basic parallel scaling analysis. There is an MNIST example, which trains an MNIST model, and a LAMMPS example (the KAPPA example distributed with LAMMPS, see https://github.com/lammps/lammps/blob/develop/examples/KAPPA/).
 
 ## Setup
 
