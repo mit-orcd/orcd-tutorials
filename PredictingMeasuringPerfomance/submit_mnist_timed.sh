@@ -1,8 +1,13 @@
 #!/bin/bash
 
-#SBATCH -p sched_mit_orcd
-#SBATCH -o log.mnist_timed-%j
+#SBATCH -p mit_normal
+#SBATCH -c 1
+#SBATCH -o log.mnist-%j
 
-source .venv/bin/activate
+# Set number of cores
+export OMP_NUM_THREADS=$SLURM_CPUS_PER_TASK
 
-python -u mnist_timed.py --epochs=5
+# Load the miniforge python module
+module load miniforge
+
+python -u mnist_timed.py
