@@ -1,7 +1,8 @@
 #!/bin/bash
 
 #SBATCH -p mit_normal
-#SBATCH -o log.mnist-%j
+#SBATCH -o log.mnist-%A-%a
+#SBATCH --array=1-4
 
 # Load the miniforge python module
 module load miniforge
@@ -18,6 +19,8 @@ for LINE_IDX in "${MY_LINE_NUMS[@]}"; do
 
     # Get the $LINE_IDX-th line from $INPUT_FILE
     INPUT="$(sed "${LINE_IDX}q;d" $INPUT_FILE)"
+
+    echo "Running with hyperparameters: " $INPUT
 
     # Run the example
     python -u mnist.py $INPUT
