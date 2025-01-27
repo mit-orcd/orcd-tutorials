@@ -26,5 +26,5 @@ for IDX in "${MY_FILE_NUMS[@]}"; do
 
     echo "Input file: " $INPUT_FILE
 
-    mpirun lmp -in $INPUT_FILE -log log.$INPUT_FILE
+    mpirun lmp -in $INPUT_FILE -log $INPUT_FILE.log
 done
