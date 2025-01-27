@@ -1,6 +1,5 @@
 import os
 import sys
-sys.path.append('../')
 from word_count_helpers import *
 
 # Load the file names
