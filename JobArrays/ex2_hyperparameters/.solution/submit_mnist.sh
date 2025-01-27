@@ -2,7 +2,7 @@
 
 #SBATCH -p mit_normal
 #SBATCH -o log.mnist-%A-%a
-#SBATCH --array=1-4
+#SBATCH --array=0-3
 
 # Load the miniforge python module
 module load miniforge

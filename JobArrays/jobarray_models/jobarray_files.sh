@@ -3,7 +3,7 @@
 # Scheduler Options
 #SBATCH -p mit_normal
 #SBATCH -o myout.log-%A-%a
-#SBATCH -a 1-4
+#SBATCH -a 0-3
 
 echo "My SLURM_ARRAY_TASK_ID: " $SLURM_ARRAY_TASK_ID
 echo "Number of Tasks: " $SLURM_ARRAY_TASK_COUNT
@@ -19,7 +19,7 @@ MY_FILE_NUMS=( $(seq $SLURM_ARRAY_TASK_ID $SLURM_ARRAY_TASK_COUNT $NUM_FILES) )
 for IDX in "${MY_FILE_NUMS[@]}"; do
 
     # Get the $IDX-th file from $INPUT_FILES
-    INPUT_FILE="$(sed "${IDX}q;d" $INPUT_FILES)"
+    INPUT_FILE=${FILES[$IDX]}
 
     # Run my_cmd on $INPUT_FILE
     my_cmd $INPUT_FILE

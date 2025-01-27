@@ -3,7 +3,7 @@
 # Scheduler Options
 #SBATCH -p mit_normal
 #SBATCH -o myout.log-%A-%a
-#SBATCH -a 1-4
+#SBATCH -a 0-3
 
 echo "My SLURM_ARRAY_TASK_ID: " $SLURM_ARRAY_TASK_ID
 echo "Number of Tasks: " $SLURM_ARRAY_TASK_COUNT

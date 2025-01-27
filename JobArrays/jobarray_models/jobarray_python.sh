@@ -1,6 +1,7 @@
 #!/bin/bash
 
 #SBATCH -o myjob.log-%A-%a
+#SBATCH -p mit_normal
 #SBATCH -a 0-3
 
 # Load Anaconda Module
