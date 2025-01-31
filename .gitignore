@@ -1,5 +1,6 @@
 *.out*
 *~
 *.venv*
-log.*
+*log.*
 profile.*
+data/MNIST/*
