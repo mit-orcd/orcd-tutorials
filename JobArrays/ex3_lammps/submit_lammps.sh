@@ -7,4 +7,4 @@
 module load openmpi/4.1.4
 module load lammps/20230802.3
 
-mpirun lmp -in in.heatflux
+mpirun lmp -in in.heatflux -log none
